@@ -25,11 +25,11 @@ class RakeGen < Rake::TaskLib
     @space = :generate
     @name = task_name
     @source = "app"
-    @files = Rake::FileList.new
+    @files = Rake::FileList.new(File.join(@source, "**/*"))
     @folders = Rake::FileList.new(File.join(@source, "**/")).map { |f| f.chomp("/") }
-    @template_extension = ".erb"
-    @template_files = Rake::FileList.new
-    @copy_files = Rake::FileList.new(File.join(@source, "**/*")) - @folders
+    @template_extension = "erb"
+    @template_files = @files.select { |f| f =~ /\.#{@template_extension}$/ }
+    @copy_files = Rake::FileList.new(File.join(@source, "**/*")) - @folders - @template_files
     
     yield self if block_given?
     define

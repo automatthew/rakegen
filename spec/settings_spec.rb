@@ -15,7 +15,16 @@ context "Default rakegen" do
   
   before(:each) do
     @generator = RakeGen.new
-    @copy_files = %w{four.erb one three.rb two.txt}.map {|f| "app/#{f}"}
+    @copy_files = %w{
+      one 
+      three.rb 
+      two.txt
+    }.map {|f| "app/#{f}"}
+    
+    @template_files = %w{ 
+      alpha/beta/five.erb 
+      four.erb 
+    }.map {|f| "app/#{f}"}
   end
   
   specify "should define a task named :app in the :generate namespace" do
@@ -29,13 +38,13 @@ context "Default rakegen" do
   specify "should have all files, but no folders, in the copy list" do
     @generator.copy_files.to_a.should == @copy_files
   end
-    
-  specify "should have an empty process list" do
-    @generator.template_files.should.be.empty
-  end
   
   specify "should have a default template extension of .erb" do
-    @generator.template_extension.should == ".erb"
+    @generator.template_extension.should == "erb"
+  end
+
+  specify "should have all .erb files in the template list" do
+    @generator.template_files.should == @template_files
   end
   
   
