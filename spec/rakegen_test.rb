@@ -1,4 +1,3 @@
-require '../../lib/utilities/string'
 require '../rakegen'
 # require 'erubis'
 require 'test/spec'
@@ -23,17 +22,22 @@ context "Default rakegen" do
     Rake.application.task_names.should.include "generate:app"
   end
   
-  specify "should use ./app as the template directory" do
-    @generator.template.should == 'app'
+  specify "should use ./app as the source directory" do
+    @generator.source.should == 'app'
   end
   
-  specify "should have all files in the copy list" do
+  specify "should have all files, but no folders, in the copy list" do
     @generator.copy_files.to_a.should == @copy_files
   end
-  
+    
   specify "should have an empty process list" do
-    @generator.process_files.should.be.empty
+    @generator.template_files.should.be.empty
   end
+  
+  specify "should have a default template extension of .erb" do
+    @generator.template_extension.should == ".erb"
+  end
+  
   
 end
 
@@ -43,7 +47,7 @@ end
 #     
 #     RakeGen.new(:app) do |gen|
 #       gen.space = :waves
-#       gen.template = File.dirname(__FILE__) / ".." / "app"
+#       gen.source = File.dirname(__FILE__) / ".." / "app"
 #       gen.process_files.include "**/*.erb"
 #       gen.processor = lambda do |source_file, target_file|
 #         File.open(target_file, 'w') do |file|
