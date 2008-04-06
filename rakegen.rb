@@ -16,7 +16,8 @@ class RakeGen < Rake::TaskLib
   # List of files to be processed (using, e.g. Erubis)
   attr_accessor :template_files
   
-  attr_accessor :template_extension
+  # list of file extensions that accept processing
+  attr_accessor :template_extensions
   
   # Lambda that processes the source files
   attr_accessor :template_processor
@@ -27,8 +28,10 @@ class RakeGen < Rake::TaskLib
     @source = "app"
     @files = Rake::FileList.new(File.join(@source, "**/*"))
     @folders = Rake::FileList.new(File.join(@source, "**/")).map { |f| f.chomp("/") }
-    @template_extension = "erb"
-    @template_files = @files.select { |f| f =~ /\.#{@template_extension}$/ }
+    @template_extensions = ["erb"]
+    @template_files = @template_extensions.inject([]) do |tfiles, ext|
+      tfiles + @files.select { |f| f =~ /\.#{ext}$/ }
+    end
     @copy_files = Rake::FileList.new(File.join(@source, "**/*")) - @folders - @template_files
     
     yield self if block_given?

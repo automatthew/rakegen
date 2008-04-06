@@ -1,4 +1,4 @@
-require '../rakegen'
+require "../rakegen"
 # require 'erubis'
 require 'test/spec'
 
@@ -16,7 +16,8 @@ context "Default rakegen" do
   before(:each) do
     @generator = RakeGen.new
     @copy_files = %w{
-      one 
+      one
+      six.textile
       three.rb 
       two.txt
     }.map {|f| "app/#{f}"}
@@ -40,7 +41,7 @@ context "Default rakegen" do
   end
   
   specify "should have a default template extension of .erb" do
-    @generator.template_extension.should == "erb"
+    @generator.template_extensions.should.include "erb"
   end
 
   specify "should have all .erb files in the template list" do
