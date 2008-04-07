@@ -1,5 +1,4 @@
 require "../rakegen"
-# require 'erubis'
 require 'test/spec'
 
 
@@ -48,7 +47,13 @@ context "Default rakegen" do
     @generator.template_files.should == @template_files
   end
   
-  
+  specify "should have a working erb template_processor" do
+    @generator.template_processor.should.respond_to :call
+    @generator.template_assigns = {:verb => "jumped"}
+    @generator.template_processor.call("app/four.erb", "/tmp/catch.txt")
+    File.open("/tmp/catch.txt", "r").read.should == "Yossarian jumped."
+  end
+    
 end
 
 # context "waves" do

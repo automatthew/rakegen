@@ -22,6 +22,9 @@ class RakeGen < Rake::TaskLib
   # Lambda that processes the source files
   attr_accessor :template_processor
   
+  # variables for use in template processing
+  attr_accessor :template_assigns
+  
   def initialize(task_name=:app)
     @space = :generate
     @name = task_name
@@ -31,6 +34,14 @@ class RakeGen < Rake::TaskLib
     @template_extensions = ["erb"]
     @template_files = @template_extensions.inject([]) do |tfiles, ext|
       tfiles + @files.select { |f| f =~ /\.#{ext}$/ }
+    end
+    @template_processor = lambda do |source_file, target_file|
+      require 'erubis'
+      File.open(target_file, 'w') do |trg|
+        File.open(source_file, 'r') do |src|
+          trg.print Erubis::Eruby.new(src.read).evaluate(template_assigns)
+        end
+      end
     end
     @copy_files = Rake::FileList.new(File.join(@source, "**/*")) - @folders - @template_files
     
