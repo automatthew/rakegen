@@ -8,10 +8,14 @@ module Rake
   end
 end
 
-context "Default rakegen" do
+SOURCE = File.join(File.dirname(__FILE__), "app")
+
+context "Simple rakegen" do
   
   before(:each) do
+    
     @generator = RakeGen.new do |gen|
+      gen.source = SOURCE
       gen.target = "/tmp/app"
     end
     @generator.template_assigns = {:verb => "jumped"}
@@ -22,16 +26,12 @@ context "Default rakegen" do
       six.textile
       three.rb 
       two.txt
-    }.map {|f| "app/#{f}"}
+    }.map {|f| "#{SOURCE}/#{f}"}
     
     @template_files = %w{ 
       alpha/beta/five.erb 
       four.erb 
-    }.map {|f| "app/#{f}"}
-  end
-  
-  specify "should use ./app as the source directory" do
-    @generator.source.should == 'app'
+    }.map {|f| "#{SOURCE}/#{f}"}
   end
   
   specify "should have all files, but no folders, in the copy list" do
@@ -48,7 +48,7 @@ context "Default rakegen" do
   
   specify "should have a working erb template_processor" do
     @generator.template_processors["erb"].should.respond_to :call
-    @generator.template_processors["erb"].call("app/four.erb", "/tmp/catch.txt")
+    @generator.template_processors["erb"].call("#{SOURCE}/four.erb", "/tmp/catch.txt")
     File.open("/tmp/catch.txt", "r").read.should == "Yossarian jumped."
   end
   
