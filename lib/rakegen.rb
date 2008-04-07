@@ -81,6 +81,8 @@ class RakeGen < Rake::TaskLib
   def template(src, trg, type)
     dir = File.dirname(trg)
     directory(dir)
+    # This is wrong wrong.  Need to do another subclass of FileTask
+    # that will handle template processing before comparing with target file
     file_update({trg => dir}, src) do
       template_processors[type].call(src, trg)
     end
