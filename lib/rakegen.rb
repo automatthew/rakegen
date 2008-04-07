@@ -1,7 +1,8 @@
 require 'rubygems'
 require 'rake'
 require 'rake/tasklib'
-require 'rakegen/file_update_task'
+$: << File.join(File.dirname(__FILE__), "rakegen")
+require 'file_update_task'
 
 class RakeGen < Rake::TaskLib
   
@@ -34,14 +35,15 @@ class RakeGen < Rake::TaskLib
   def initialize(task_name=:app)
     @space = :generate
     @name = task_name
-    @source = "app"
+    @template_processors = {}
+    @template_extensions = ["erb"]
+    yield self # if block_given?
+    @source ||= "app"
     @files = Rake::FileList.new(source("**/*"))
     @directories = Rake::FileList.new(source("**/")).map { |f| f.chomp("/") }
-    @template_extensions = ["erb"]
     @template_files = @template_extensions.inject([]) do |tfiles, ext|
       tfiles + @files.select { |f| f =~ /\.#{ext}$/ }
     end
-    @template_processors = {}
     @template_processors["erb"] = lambda do |source_file, target_file|
       require 'erubis'
       File.open(target_file, 'w') do |trg|
@@ -52,7 +54,6 @@ class RakeGen < Rake::TaskLib
     end
     @copy_files = Rake::FileList.new(File.join(@source, "**/*")) - @directories - @template_files
     
-    yield self # if block_given?
     define
   end
   

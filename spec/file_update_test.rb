@@ -13,6 +13,7 @@ context "A file_update task" do
       gen.file_update "testdata/file", "testdata/stuff" do
         cp "testdata/stuff", "testdata/file"
       end
+      
     end
   end
   
@@ -34,5 +35,6 @@ context "A file_update task" do
     File.open("testdata/file", "w") { |f| f.print "one" }
     Rake::Task["testdata/file"].needed?.should == false
   end
+
   
 end
