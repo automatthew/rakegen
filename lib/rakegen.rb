@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'rake'
 require 'rake/tasklib'
+require 'rakegen/file_update_task'
+
 class RakeGen < Rake::TaskLib
   
   attr_accessor :name
@@ -62,10 +64,14 @@ class RakeGen < Rake::TaskLib
     path ? File.join(@target, path) : @target
   end
   
+  def file_update(*args, &block)
+    Rake::FileUpdateTask.define_task(*args, &block)
+  end
+  
   def copy(src, trg)
     dir = File.dirname(trg)
     directory(dir)
-    file(trg => dir) do
+    file_update({trg => dir}, src) do
       cp src, trg
     end
     task :copy => trg
@@ -74,7 +80,7 @@ class RakeGen < Rake::TaskLib
   def template(src, trg, type)
     dir = File.dirname(trg)
     directory(dir)
-    file(trg => dir) do
+    file_update({trg => dir}, src) do
       template_processors[type].call(src, trg)
     end
     task :template => trg

@@ -1,6 +1,4 @@
-require "../rakegen"
-require 'test/spec'
-
+require 'helper'
 
 module Rake
   module TaskManager
