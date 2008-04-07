@@ -13,7 +13,12 @@ end
 context "Default rakegen" do
   
   before(:each) do
-    @generator = RakeGen.new
+    @generator = RakeGen.new do |gen|
+      gen.target = "/tmp/app"
+    end
+    @generator.template_assigns = {:verb => "jumped"}
+    @tasks = Rake.application.task_names
+    
     @copy_files = %w{
       one
       six.textile
@@ -25,10 +30,6 @@ context "Default rakegen" do
       alpha/beta/five.erb 
       four.erb 
     }.map {|f| "app/#{f}"}
-  end
-  
-  specify "should define a task named :app in the :generate namespace" do
-    Rake.application.task_names.should.include "generate:app"
   end
   
   specify "should use ./app as the source directory" do
@@ -48,29 +49,30 @@ context "Default rakegen" do
   end
   
   specify "should have a working erb template_processor" do
-    @generator.template_processor.should.respond_to :call
-    @generator.template_assigns = {:verb => "jumped"}
-    @generator.template_processor.call("app/four.erb", "/tmp/catch.txt")
+    @generator.template_processors["erb"].should.respond_to :call
+    @generator.template_processors["erb"].call("app/four.erb", "/tmp/catch.txt")
     File.open("/tmp/catch.txt", "r").read.should == "Yossarian jumped."
   end
+  
+  specify "should define :copy and :template tasks in the generate:app namespace" do
+    @tasks.should.include "/tmp/app/six.textile"
+    Rake::Task["generate:app:copy"].invoke
+    Rake::Task["generate:app:template"].invoke
+    assert File.exist?("/tmp/app/four")
+    assert File.exist?("/tmp/app/one")
+  end
+  
+  specify "should define file tasks for empty directories" do
+    @tasks.should.include "/tmp/app/alpha/gamma"
+    @tasks.should.include "generate:app:directories"
+    Rake::Task["generate:app:directories"].invoke
+    assert File.directory?("/tmp/app/alpha/gamma")
+  end
+  
+  specify "should define generate:app with depends of :copy and :template" do
+    @tasks.should.include "generate:app"
+    Rake::Task["generate:app"].prerequisites.should == ["generate:app:copy", "generate:app:template", "generate:app:directories"]
+  end
+  
     
 end
-
-# context "waves" do
-#   
-#   before(:each) do
-#     
-#     RakeGen.new(:app) do |gen|
-#       gen.space = :waves
-#       gen.source = File.dirname(__FILE__) / ".." / "app"
-#       gen.process_files.include "**/*.erb"
-#       gen.processor = lambda do |source_file, target_file|
-#         File.open(target_file, 'w') do |file|
-#           Erubis::Eruby.new( File.read( "#{source_file}.erb" ) ).evaluate( processor_assigns )
-#         end
-#       end
-#     end
-#     
-#   end
-#   
-# end
