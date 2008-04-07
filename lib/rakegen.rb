@@ -1,8 +1,7 @@
 require 'rubygems'
 require 'rake'
 require 'rake/tasklib'
-$: << File.join(File.dirname(__FILE__), "rakegen")
-require 'file_update'
+require 'rakegen/file_update'
 
 class RakeGen < Rake::TaskLib
   
