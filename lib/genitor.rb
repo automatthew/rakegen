@@ -3,7 +3,7 @@ require 'rake'
 require 'rake/tasklib'
 require 'rakegen/file_update'
 
-class RakeGen < Rake::TaskLib
+class Genitor < Rake::TaskLib
   
   attr_accessor :name
   

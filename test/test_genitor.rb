@@ -14,7 +14,7 @@ context "Simple rakegen" do
   
   before(:each) do
     
-    @generator = RakeGen.new do |gen|
+    @generator = Genitor.new do |gen|
       gen.source = SOURCE
       gen.target = "/tmp/app"
     end
