@@ -1,15 +1,14 @@
 require 'rubygems'
 require 'rake'
 require 'rake/tasklib'
-require 'genitor/file_update'
+require 'genitor/file_copy'
+require 'genitor/template'
+require 'erubis'
 
 class Genitor < Rake::TaskLib
   
   # Name of the primary Rake task
   attr_accessor :name
-  
-  # Tasks will live in this namespace
-  attr_accessor :space
   
   # Directory to use as source
   attr_writer :source
@@ -36,15 +35,16 @@ class Genitor < Rake::TaskLib
   attr_accessor :template_assigns
   
   # Create a Genitor task named <em>task_name</em>.  Default task name is +app+.
-  def initialize(task_name=:app)
-    @space = :generate
-    @name = task_name
+  def initialize(name=:app)
+    @name = name
     @template_processors = {}
     @template_extensions = ["erb"]
     yield self # if block_given?
-    @source ||= "app"
-    @files = Rake::FileList.new(source("**/*"))
-    @directories = Rake::FileList.new(source("**/")).map { |f| f.chomp("/") }
+    # @source ||= File.join(File.dirname(__FILE__), "app")
+    Dir.chdir(@source) do
+      @files = Rake::FileList.new("**/*").to_a
+      @directories = Rake::FileList.new("**/").map { |f| f.chomp("/") }.to_a
+    end
     @template_files = @template_extensions.inject([]) do |tfiles, ext|
       tfiles + @files.select { |f| f =~ /\.#{ext}$/ }
     end
@@ -71,61 +71,80 @@ class Genitor < Rake::TaskLib
     path ? File.join(@target, path) : @target
   end
   
+  def temp(path=nil)
+    path ? File.join(@target, "tmp", "genitor", path) : @target
+  end
+  
+  def file_copy(*args, &block)
+    FileCopyTask.define_task(*args, &block)
+  end
+  
   def file_update(*args, &block)
-    Rake::FileUpdateTask.define_task(*args, &block)
+    FileCopyTask.define_task(*args, &block)
   end
   
-  def copy(src, trg)
-    dir = File.dirname(trg)
-    directory(dir)
-    file_update({trg => dir}, src) do
-      cp src, trg
-    end
-    task :copy => trg
+  def file_template(*args, &block)
+    TemplateTask.define_task(*args, &block)
   end
   
-  def template(src, trg, type)
-    dir = File.dirname(trg)
+  def copy(source_file, target_file)
+    dir = File.dirname(target_file)
     directory(dir)
-    # This is wrong wrong.  Need to do another subclass of FileTask
-    # that will handle template processing before comparing with target file
-    file_update({trg => dir}, src) do
-      template_processors[type].call(src, trg)
+    file_copy({target_file => dir}, source_file) do
+      cp source_file, target_file
     end
-    task :template => trg
+    task :copy => target_file
+  end
+  
+  def template(source_file, temp_file, target_file)
+    dir = File.dirname(target_file)
+    directory(dir)
+    file_copy target_file => [temp_file, dir] do
+      cp temp_file, target_file
+    end
+    task :template => target_file
   end
   
   # Define the necessary Genitor tasks
   def define
-    # default is namespace(:generate)
-    namespace space do
       desc "Create or update project using Genitor"
-      task name => ["#{space}:#{name}:copy", "#{space}:#{name}:template", "#{space}:#{name}:directories"]
+      task name => ["#{name}:copy", "#{name}:template", "#{name}:directories"]
       
       # default is namespace(:app)
       namespace name do
         task :template
+        task :clean_temp => :template do
+          rm_r template
+        end
       
-        @copy_files.each do |source_file|
-          target_file = source_file.sub(source, target)
+        @copy_files.each do |file|
+          source_file = source(file)
+          target_file = target(file)
           copy(source_file, target_file)
         end
         
-        @template_files.each do |source_file|
-          template_type = source_file.match(/\.(\w+)$/)[1]
-          # raise template_type
-          target_file = source_file.chomp(".#{template_type}").sub(source, target)
-          template(source_file, target_file, template_type)
+        @template_files.each do |file|
+          template_type = file.match(/\.(\w+)$/)[1]
+          base_name = file.chomp(".#{template_type}")
+          source_file = source(file)
+          temp_file = temp(base_name)
+          target_file = target(base_name)
+          temp_dir = File.dirname(temp_file)
+          directory(temp_dir)
+          file temp_file => temp_dir do
+            template_processors[template_type].call(source_file, temp_file)
+          end
+          template(source_file, temp_file, target_file)
         end
         
-        @directories.each do |source_file|
-          target_file = source_file.sub(source, target)
+        @directories.each do |file|
+          source_file = source(file)
+          target_file = target(file)
           directory target_file
           task :directories => target_file
         end
       end
       
-    end
   end
   
 end

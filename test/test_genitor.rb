@@ -1,38 +1,28 @@
 require 'helper'
 
-module Rake
-  module TaskManager
-    def task_names
-      tasks.map { |t| t.name }
-    end
-  end
-end
-
-SOURCE = File.join(File.dirname(__FILE__), "app")
-
 context "Simple genitor" do
   
   before(:each) do
-    
-    @generator = Genitor.new do |gen|
-      gen.source = SOURCE
-      gen.target = "/tmp/app"
+    @target = File.join(TEST_DIR, "app_target")
+    @generator = Genitor.new("waves:app") do |gen|
+      gen.source = TEST_APP
+      gen.target = @target
+      gen.template_assigns = {:verb => "jumped"}
     end
     
-    @generator.template_assigns = {:verb => "jumped"}
-    @tasks = Rake.application.task_names
+    @tasks = Rake.application.tasks.map { |t| t.name }
     
     @copy_files = %w{
       one
       six.textile
       three.rb
       two.txt
-    }.map {|f| "#{SOURCE}/#{f}"}
+    }
     
     @template_files = %w{ 
       alpha/beta/five.erb 
       four.erb 
-    }.map {|f| "#{SOURCE}/#{f}"}
+    }
   end
   
   specify "should have all files, but no folders, in the copy list" do
@@ -49,28 +39,30 @@ context "Simple genitor" do
   
   specify "should have a working erb template_processor" do
     @generator.template_processors["erb"].should.respond_to :call
-    @generator.template_processors["erb"].call("#{SOURCE}/four.erb", "/tmp/catch.txt")
-    File.open("/tmp/catch.txt", "r").read.should == "Yossarian jumped."
+    @generator.template_processors["erb"].call("#{TEST_APP}/four.erb", "testdata/catch.txt")
+    File.open("testdata/catch.txt", "r").read.should == "Yossarian jumped."
   end
   
-  specify "should define :copy and :template tasks in the generate:app namespace" do
-    @tasks.should.include "/tmp/app/six.textile"
-    Rake::Task["generate:app:copy"].invoke
-    Rake::Task["generate:app:template"].invoke
-    assert File.exist?("/tmp/app/four")
-    assert File.exist?("/tmp/app/one")
+  specify "should define :copy and :template tasks in the waves:app namespace" do
+    @tasks.should.include File.join(@target, "six.textile")
+    Rake::Task["waves:app:copy"].invoke
+    Rake::Task["waves:app:template"].invoke
+    assert File.exist?(File.join(@target, "four"))
+    assert File.exist?(File.join(@target, "one"))
+    rm_r @target
   end
   
   specify "should define file tasks for empty directories" do
-    @tasks.should.include "/tmp/app/alpha/gamma"
-    @tasks.should.include "generate:app:directories"
-    Rake::Task["generate:app:directories"].invoke
-    assert File.directory?("/tmp/app/alpha/gamma")
+    @tasks.should.include File.join(@target, "alpha/gamma")
+    @tasks.should.include "waves:app:directories"
+    Rake::Task["waves:app:directories"].invoke
+    assert File.directory?(File.join(@target, "alpha/gamma"))
+    rm_r @target
   end
   
-  specify "should define generate:app with depends of :copy and :template" do
-    @tasks.should.include "generate:app"
-    Rake::Task["generate:app"].prerequisites.should == ["generate:app:copy", "generate:app:template", "generate:app:directories"]
+  specify "should define waves:app with depends of :copy and :template" do
+    @tasks.should.include "waves:app"
+    Rake::Task["waves:app"].prerequisites.should == ["waves:app:copy", "waves:app:template", "waves:app:directories"]
   end
   
     
