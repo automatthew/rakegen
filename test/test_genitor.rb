@@ -10,7 +10,7 @@ end
 
 SOURCE = File.join(File.dirname(__FILE__), "app")
 
-context "Simple rakegen" do
+context "Simple genitor" do
   
   before(:each) do
     
@@ -18,6 +18,7 @@ context "Simple rakegen" do
       gen.source = SOURCE
       gen.target = "/tmp/app"
     end
+    
     @generator.template_assigns = {:verb => "jumped"}
     @tasks = Rake.application.task_names
     

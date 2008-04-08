@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'rake'
 require 'rake/tasklib'
-require 'rakegen/file_update'
+require 'genitor/file_update'
 
 class Genitor < Rake::TaskLib
   

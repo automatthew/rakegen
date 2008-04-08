@@ -11,6 +11,7 @@ context "A file_update task" do
   before(:each) do
     @testsource = File.join(File.dirname(__FILE__), "testdata", "source")
     @testtarget = File.join(File.dirname(__FILE__), "testdata", "target")
+    
     @generator = Genitor.new do |gen|
       gen.target = "testdata"
       
