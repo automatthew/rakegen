@@ -24,6 +24,10 @@ context "A file_copy task" do
     rm @target if File.exist?(@target)
   end
   
+  after(:all) do
+    rm COPY_FILE if File.exist?(COPY_FILE)
+  end
+  
   
   specify "should be needed when the file does not exist" do
     Rake::Task[@target].needed?.should == true

@@ -41,6 +41,7 @@ context "Simple genitor" do
     @generator.template_processors["erb"].should.respond_to :call
     @generator.template_processors["erb"].call("#{TEST_APP}/four.erb", "#{TEST_DIR}/catch.txt")
     File.open("#{TEST_DIR}/catch.txt", "r").read.should == "Yossarian jumped."
+    rm "#{TEST_DIR}/catch.txt"
   end
   
   specify "should define :copy and :template tasks in the waves:app namespace" do
