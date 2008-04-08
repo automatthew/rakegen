@@ -25,7 +25,7 @@ context "Simple genitor" do
     @copy_files = %w{
       one
       six.textile
-      three.rb 
+      three.rb
       two.txt
     }.map {|f| "#{SOURCE}/#{f}"}
     

@@ -5,15 +5,19 @@ require 'genitor/file_update'
 
 class Genitor < Rake::TaskLib
   
+  # Name of the primary Rake task
   attr_accessor :name
   
+  # Tasks will live in this namespace
   attr_accessor :space
   
-  # directory containing the source
+  # Directory to use as source
   attr_writer :source
   
+  # Directory to use as target.  Not required to exist.
   attr_writer :target
   
+  # List of directories that need to be created
   attr_reader :directories
   
   # List of files to be copied
@@ -31,6 +35,7 @@ class Genitor < Rake::TaskLib
   # variables for use in template processing
   attr_accessor :template_assigns
   
+  # Create a Genitor task named <em>task_name</em>.  Default task name is +app+.
   def initialize(task_name=:app)
     @space = :generate
     @name = task_name
@@ -51,15 +56,17 @@ class Genitor < Rake::TaskLib
         end
       end
     end
-    @copy_files = Rake::FileList.new(File.join(@source, "**/*")) - @directories - @template_files
+    @copy_files = @files - @directories - @template_files
     
     define
   end
   
+  # If given a path, joins it to @source.  Otherwise returns @source
   def source(path=nil)
     path ? File.join(@source, path) : @source
   end
   
+  # If given a path, joins it to @targe.  Otherwise returns @target
   def target(path=nil)
     path ? File.join(@target, path) : @target
   end
@@ -88,9 +95,11 @@ class Genitor < Rake::TaskLib
     task :template => trg
   end
   
+  # Define the necessary Genitor tasks
   def define
     # default is namespace(:generate)
     namespace space do
+      desc "Create or update project using Genitor"
       task name => ["#{space}:#{name}:copy", "#{space}:#{name}:template", "#{space}:#{name}:directories"]
       
       # default is namespace(:app)
@@ -114,15 +123,9 @@ class Genitor < Rake::TaskLib
           directory target_file
           task :directories => target_file
         end
-        
       end
       
-      
     end
-  end
-    
-  def target_dir
-    ENV["AT"] || "/tmp"
   end
   
 end
