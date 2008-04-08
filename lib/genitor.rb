@@ -78,10 +78,6 @@ class Genitor < Rake::TaskLib
     FileCopyTask.define_task(*args, &block)
   end
   
-  def file_update(*args, &block)
-    FileCopyTask.define_task(*args, &block)
-  end
-  
   def copy(source_file, target_file)
     dir = File.dirname(target_file)
     directory(dir)
