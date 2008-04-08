@@ -2,7 +2,6 @@ require 'rubygems'
 require 'rake'
 require 'rake/tasklib'
 require 'genitor/file_copy'
-require 'genitor/template'
 require 'erubis'
 
 class Genitor < Rake::TaskLib
@@ -72,7 +71,7 @@ class Genitor < Rake::TaskLib
   end
   
   def temp(path=nil)
-    path ? File.join(@target, "tmp", "genitor", path) : @target
+    path ? File.join(@target, "tmp", "genitor", path) : File.join(@target, "tmp", "genitor")
   end
   
   def file_copy(*args, &block)
@@ -83,17 +82,13 @@ class Genitor < Rake::TaskLib
     FileCopyTask.define_task(*args, &block)
   end
   
-  def file_template(*args, &block)
-    TemplateTask.define_task(*args, &block)
-  end
-  
   def copy(source_file, target_file)
     dir = File.dirname(target_file)
     directory(dir)
     file_copy({target_file => dir}, source_file) do
       cp source_file, target_file
     end
-    task :copy => target_file
+    task :copy_files => target_file
   end
   
   def template(source_file, temp_file, target_file)
@@ -102,19 +97,24 @@ class Genitor < Rake::TaskLib
     file_copy target_file => [temp_file, dir] do
       cp temp_file, target_file
     end
-    task :template => target_file
+    task :process_templates => target_file
   end
   
   # Define the necessary Genitor tasks
   def define
       desc "Create or update project using Genitor"
-      task name => ["#{name}:copy", "#{name}:template", "#{name}:directories"]
+      task name => ["#{name}:copy_files", "#{name}:template_files", "#{name}:directories"]
       
       # default is namespace(:app)
       namespace name do
-        task :template
-        task :clean_temp => :template do
-          rm_r template
+        task :template_files => [:clean_temp]
+        task :clean_temp => [:process_templates] do
+          begin
+            rm_r temp
+            rmdir File.join(@target, "tmp")
+          rescue Errno::ENOENT
+          rescue Errno::ENOTEMPTY
+          end
         end
       
         @copy_files.each do |file|
