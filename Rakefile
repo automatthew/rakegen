@@ -1,4 +1,4 @@
-%w{rubygems rake/gempackagetask rake/testtask rake/rdoctask }.each do |dep|
+%w{rubygems rake/gempackagetask rake/testtask rake/rdoctask rcov/rcovtask}.each do |dep|
   require dep
 end
 
@@ -9,6 +9,12 @@ Rake::TestTask.new do |test|
   test.test_files = FileList["test/test_*.rb"]
 end
 
+Rcov::RcovTask.new do |rcov|
+  rcov.libs << "test"
+  rcov.test_files = FileList['test/test_*.rb']
+  rcov.verbose = true
+end
+
 Rake::RDocTask.new do |rdoc|
   rdoc.main = "README"
   rdoc.rdoc_files.include("README", "lib")
@@ -17,7 +23,7 @@ end
 
 gem = Gem::Specification.new do |gem|
 	gem.name = "genitor"
-	gem.summary	= "Extension to Rake for generating and updating projects from templates"
+	gem.summary	= "Generation and updation of projects from templates.  Rake-powered, for sustainable blah blah."
 	gem.version = "0.5.0"
 	gem.author = "Matthew King"
 	gem.email = "automatthew@gmail.com"
