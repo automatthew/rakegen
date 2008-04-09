@@ -1,0 +1,15 @@
+CHANGELOG
+lib/genitor/file_copy.rb
+lib/genitor.rb
+LICENSE
+Manifest
+README
+test/helper.rb
+test/test_file_copy.rb
+test/test_genitor.rb
+test/testdata/app/alpha/beta/five.erb
+test/testdata/app/four.erb
+test/testdata/app/one
+test/testdata/app/six.textile
+test/testdata/app/three.rb
+test/testdata/app/two.txt
