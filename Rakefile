@@ -1,4 +1,4 @@
-%w{rubygems rake/gempackagetask rake/testtask rake/rdoctask rcov/rcovtask}.each do |dep|
+%w{rubygems}.each do |dep|
   require dep
 end
 

@@ -1,4 +1,4 @@
-require 'helper'
+require File.join(File.dirname(__FILE__), "helper")
 
 context "A file_copy task" do
   
