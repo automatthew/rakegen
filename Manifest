@@ -1,12 +1,12 @@
 CHANGELOG
-lib/genitor/file_copy.rb
+lib/genitor/polite_file.rb
 lib/genitor.rb
 LICENSE
 Manifest
 README
 test/helper.rb
-test/test_file_copy.rb
 test/test_genitor.rb
+test/test_polite_file.rb
 test/testdata/app/alpha/beta/five.erb
 test/testdata/app/four.erb
 test/testdata/app/one

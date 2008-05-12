@@ -12,6 +12,12 @@ context "Simple genitor" do
     
     @tasks = Rake.application.tasks.map { |t| t.name }
     
+    @directories = %w{
+      alpha
+      alpha/beta
+      alpha/gamma
+    }
+    
     @copy_files = %w{
       one
       six.textile
@@ -25,16 +31,24 @@ context "Simple genitor" do
     }
   end
   
-  specify "should have all files, but no folders, in the copy list" do
-    @generator.copy_files.to_a.should == @copy_files
+  after(:each) do
+    rm_r @target if File.exist?(@target)
   end
   
-  specify "should have a default template extension of .erb" do
-    @generator.template_extensions.should.include "erb"
+  specify "should have all directories in the directories list" do
+    @generator.directories.to_a.should == @directories
+  end
+  
+  specify "should have all non-erb files in the copy list" do
+    @generator.copy_files.to_a.should == @copy_files
   end
 
   specify "should have all .erb files in the template list" do
     @generator.template_files.should == @template_files
+  end
+  
+  specify "should have an empty excludes list" do
+    @generator.excludes.should == []
   end
   
   specify "should have a working erb template_processor" do
@@ -44,26 +58,18 @@ context "Simple genitor" do
     rm "#{TEST_DIR}/catch.txt"
   end
   
-  specify "should define :copy and :template tasks in the waves:app namespace" do
-    @tasks.should.include File.join(@target, "six.textile")
-    Rake::Task["waves:app:copy_files"].invoke
-    Rake::Task["waves:app:template_files"].invoke
-    assert File.exist?(File.join(@target, "four"))
-    assert File.exist?(File.join(@target, "one"))
-    rm_r @target
-  end
-  
-  specify "should define file tasks for empty directories" do
-    @tasks.should.include File.join(@target, "alpha/gamma")
-    @tasks.should.include "waves:app:directories"
-    Rake::Task["waves:app:directories"].invoke
-    assert File.directory?(File.join(@target, "alpha/gamma"))
-    rm_r @target
-  end
-  
-  specify "should define waves:app with depends of :copy and :template" do
-    @tasks.should.include "waves:app"
-    Rake::Task["waves:app"].prerequisites.should == ["waves:app:copy_files", "waves:app:template_files", "waves:app:directories"]
+  specify "should copy or process all files and directories" do
+    Rake::Task["waves:app"].invoke
+    @copy_files.each do |f|
+      assert File.exist?(File.join(@target, f))
+    end
+    @directories.each do |dir|
+      assert File.directory?(File.join(@target, dir))
+    end
+    @template_files.each do |tf|
+      assert File.exist?(File.join(@target, tf.chomp(".erb")))
+    end
+    File.open(File.join(@target, "four"), "r").read.should == "Yossarian jumped."
   end
   
     

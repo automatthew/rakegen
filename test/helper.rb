@@ -1,4 +1,5 @@
-%w( rubygems test/spec mocha redgreen English ).each { |f| require f }
+%w( rubygems test/spec mocha English ).each { |f| require f }
+require 'redgreen' if ENV['TM_FILENAME'].nil?
 
 $:.unshift File.dirname(__FILE__) + '/../lib'
 require 'genitor'
