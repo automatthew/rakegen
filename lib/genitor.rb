@@ -24,7 +24,7 @@ class Genitor < Rake::TaskLib
   # List of files to be processed (using, e.g. Erubis)
   attr_accessor :template_files
   
-  # Lambda that processes the source files
+  # Hash of extension => lambda
   attr_accessor :template_processors
   
   # variables for use in template processing

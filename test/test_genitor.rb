@@ -7,6 +7,7 @@ context "Simple genitor" do
     @generator = Genitor.new("waves:app") do |gen|
       gen.source = TEST_APP
       gen.target = @target
+      gen.excludes << "**/two.*"
       gen.template_assigns = {:verb => "jumped"}
     end
     
@@ -22,13 +23,13 @@ context "Simple genitor" do
       one
       six.textile
       three.rb
-      two.txt
     }
     
     @template_files = %w{ 
       alpha/beta/five.erb 
       four.erb 
     }
+    
   end
   
   after(:each) do
@@ -48,7 +49,7 @@ context "Simple genitor" do
   end
   
   specify "should have an empty excludes list" do
-    @generator.excludes.should == []
+    @generator.excludes.should == ["**/two.*"]
   end
   
   specify "should have a working erb template_processor" do
