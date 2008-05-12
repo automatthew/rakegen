@@ -1,4 +1,5 @@
 CHANGELOG
+genitor.gemspec
 lib/genitor/polite_file.rb
 lib/genitor.rb
 LICENSE
