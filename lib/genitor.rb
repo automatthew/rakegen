@@ -31,6 +31,8 @@ class Genitor < Rake::TaskLib
   attr_accessor :template_assigns
   
   attr_accessor :excludes
+  
+  attr_accessor :executables
     
   # Create a Genitor task named <em>task_name</em>.  Default task name is +app+.
   def initialize(name=:app)
@@ -60,6 +62,8 @@ class Genitor < Rake::TaskLib
       tfiles + @files.select { |f| f =~ /\.#{ext}$/ }
     end
     @copy_files = @files - @directories - @template_files
+    
+    @target_executables = @executables.map { |f| target(f) }
     
     define
   end
@@ -106,6 +110,15 @@ class Genitor < Rake::TaskLib
           source_file, target_file = source(file), target(file)
           directory(target_file)
         end
+        
+        unless RUBY_PLATFORM =~ /mswin32/
+          @target_executables.each do |executable|
+            file executable do |task|
+              system "chmod +x #{task.name}"
+            end
+          end
+        end
+        
       end
       
   end

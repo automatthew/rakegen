@@ -9,6 +9,7 @@ context "Simple genitor" do
       gen.target = @target
       gen.excludes << "**/two.*"
       gen.template_assigns = {:verb => "jumped"}
+      gen.executables << "one"
     end
     
     @tasks = Rake.application.tasks.map { |t| t.name }
@@ -52,6 +53,10 @@ context "Simple genitor" do
     @generator.excludes.should == ["**/two.*"]
   end
   
+  specify "should have an executables list" do
+    @generator.executables.should == ["one"]
+  end
+  
   specify "should have a working erb template_processor" do
     @generator.template_processors["erb"].should.respond_to :call
     @generator.template_processors["erb"].call("#{TEST_APP}/four.erb", "#{TEST_DIR}/catch.txt")
@@ -65,12 +70,13 @@ context "Simple genitor" do
       assert File.exist?(File.join(@target, f))
     end
     @directories.each do |dir|
-      assert File.directory?(File.join(@target, dir))
+      assert File.directory?(@generator.target(dir))
     end
     @template_files.each do |tf|
-      assert File.exist?(File.join(@target, tf.chomp(".erb")))
+      assert File.exist?(@generator.target(tf.chomp(".erb")))
     end
     File.open(File.join(@target, "four"), "r").read.should == "Yossarian jumped."
+    assert File.executable?(@generator.target("one"))
   end
   
     

@@ -1,6 +1,6 @@
 = Genitor
 
-Genitor is a Rake extension for generating and updating projects from templates.  Give Genitor a source and a target, and it creates a rake task that will create the necessary directories and copy the template files to the target.  Genitor processes .erb files by default, but you can register a template processing lambda for any file extension.  Because Genitor is Rake-based, you can add your own dependencies and actions to any target file.
+Genitor is a Rake extension for generating and updating projects from templates.  Give Genitor a source and a target, and it creates a rake task that will make the necessary directories and copy the template files to the target.  Genitor processes .erb files by default, but you can register a template processing lambda for any file extension.  Because Genitor is Rake-based, you can add your own dependencies and actions to any target file.
 
 == Usage
 
