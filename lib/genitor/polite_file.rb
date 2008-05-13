@@ -7,6 +7,8 @@ class PoliteFileTask < Rake::FileTask
   end
 
   def confirm?
+    agree("Overwrite '#{name}' ?", false)
+    true
     # will use highline stuff
   end
   

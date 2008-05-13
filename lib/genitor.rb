@@ -3,11 +3,14 @@ require 'rake'
 require 'rake/tasklib'
 require 'genitor/polite_file'
 require 'erubis'
+require "highline/import"
 
 class Genitor < Rake::TaskLib
   
   # Name of the primary Rake task
   attr_accessor :name
+  
+  attr_accessor :description
   
   # Directory to use as source
   attr_writer :source
@@ -20,6 +23,8 @@ class Genitor < Rake::TaskLib
   
   # List of files to be copied
   attr_accessor :copy_files
+  attr_accessor :all_files
+  attr_accessor :files
   
   # List of files to be processed (using, e.g. Erubis)
   attr_accessor :template_files
@@ -63,6 +68,8 @@ class Genitor < Rake::TaskLib
     end
     @copy_files = @files - @directories - @template_files
     
+    @all_files = @files - @template_files + @template_files.map { |f| f.chomp(File.extname(f)) }
+    
     @target_executables = @executables.map { |f| target(f) }
     
     define
@@ -86,23 +93,24 @@ class Genitor < Rake::TaskLib
   # Define the necessary Genitor tasks
   def define
       desc "Create or update project using Genitor"
-      task name => @files.map { |f| target(f) }
+      task name => @all_files.map { |f| target(f) }
       
       # default is namespace(:app)
       namespace name do
         
-        @copy_files.each do |file|
-          source_file, target_file = source(file), target(file)
-          file target_file => source_file do
+        @copy_files.each do |cf|
+          source_file, target_file = source(cf), target(cf)
+          polite_file target_file => source_file do
             cp source_file, target_file
           end
         end
         
-        # Define a rule for each template extension.  Rake rules are
-        # only used when no other task for a file is defined.
-        @template_processors.each do |ext, block|
-          rule ext do |t|
-            block.call(source(t.name.sub(@target, "")), t.name.chomp(".#{ext}"))
+        @template_files.each do |tf|
+          extension = File.extname(tf)
+          source_file, target_file = source(tf), target(tf.chomp(extension))
+          block = @template_processors[extension[1..-1]]
+          polite_file target_file do
+            block.call(source_file, target_file)
           end
         end
         

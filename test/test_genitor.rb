@@ -39,6 +39,7 @@ context "Simple genitor" do
   
   specify "should have all directories in the directories list" do
     @generator.directories.to_a.should == @directories
+    # @generator.template_files.should == 1
   end
   
   specify "should have all non-erb files in the copy list" do
