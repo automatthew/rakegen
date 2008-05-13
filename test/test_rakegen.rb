@@ -1,10 +1,10 @@
 require File.join(File.dirname(__FILE__), "helper")
 
-context "Simple genitor" do
+context "Simple rakegen" do
   
   before(:each) do
     @target = File.join(TEST_DIR, "app_target")
-    @generator = Genitor.new("waves:app") do |gen|
+    @generator = Rakegen.new("waves:app") do |gen|
       gen.source = TEST_APP
       gen.target = @target
       gen.excludes << "**/two.*"

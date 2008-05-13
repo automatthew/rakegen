@@ -1,10 +1,10 @@
-= Genitor
+= Rakegen
 
-Genitor is a Rake extension for generating and updating projects from templates.  Give Genitor a source and a target, and it creates a rake task that will make the necessary directories and copy the template files to the target.  Genitor processes .erb files by default, but you can register a template processing lambda for any file extension.  Because Genitor is Rake-based, you can add your own dependencies and actions to any target file.
+Rakegen is a Rake extension for generating and updating projects from templates.  Give Rakegen a source and a target, and it creates a rake task that will make the necessary directories and copy the template files to the target.  Rakegen processes .erb files by default, but you can register a template processing lambda for any file extension.  Because Rakegen is Rake-based, you can add your own dependencies and actions to any target file.
 
 == Usage
 
-  generator = Genitor.new("generate:app") do |gen|
+  generator = Rakegen.new("generate:app") do |gen|
     gen.source = "templates/application"
     gen.target = "/Users/matthew/dev/waves/thingy"
     gen.excludes << "**/*.yaml"
@@ -18,4 +18,4 @@ This will define a task named, naturally enough, "generate:app".  You can invoke
 
   Rake::Task["generate:app"].invoke
   
-At the moment, Genitor happily clobbers any copyable files with mod dates older than the associated template file.  Files produced by template processing always get clobbered.  Soon to come is a more courteous file task that asks if you want to clobber or skip.
+At the moment, Rakegen happily clobbers any copyable files with mod dates older than the associated template file.  Files produced by template processing always get clobbered.  Soon to come is a more courteous file task that asks if you want to clobber or skip.

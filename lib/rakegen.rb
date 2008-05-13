@@ -1,11 +1,11 @@
 require 'rubygems'
 require 'rake'
 require 'rake/tasklib'
-require 'genitor/polite_file'
+require 'rakegen/polite_file'
 require 'erubis'
 require "highline/import"
 
-class Genitor < Rake::TaskLib
+class Rakegen < Rake::TaskLib
   
   # Name of the primary Rake task
   attr_accessor :name
@@ -39,7 +39,7 @@ class Genitor < Rake::TaskLib
   
   attr_accessor :executables
     
-  # Create a Genitor task named <em>task_name</em>.  Default task name is +app+.
+  # Create a Rakegen task named <em>task_name</em>.  Default task name is +app+.
   def initialize(name=:app)
     @name = name
     @excludes = []
@@ -90,9 +90,9 @@ class Genitor < Rake::TaskLib
     path ? File.join(@target, path) : @target
   end
   
-  # Define the necessary Genitor tasks
+  # Define the necessary Rakegen tasks
   def define
-      desc "Create or update project using Genitor"
+      desc "Create or update project using Rakegen"
       task name => @all_files.map { |f| target(f) }
       
       # default is namespace(:app)

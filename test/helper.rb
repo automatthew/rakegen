@@ -2,7 +2,7 @@
 require 'redgreen' if ENV['TM_FILENAME'].nil?
 
 $:.unshift File.dirname(__FILE__) + '/../lib'
-require 'genitor'
+require 'rakegen'
 
 TEST_DIR = File.join(File.dirname(__FILE__), "testdata")
 TEST_APP = File.join(TEST_DIR, "app")

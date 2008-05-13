@@ -9,8 +9,8 @@ task :default => [:test]
 begin
   gem 'echoe', '>=2.7'
   require 'echoe'
-  Echoe.new('genitor', Version) do |p|
-    p.project = 'genitor'
+  Echoe.new('rakegen', Version) do |p|
+    p.project = 'rakegen'
     p.summary = "Generation and updation of projects from templates.  Rake-powered, for sustainable blah blah."
     p.author = "Matthew King"
     p.email = "automatthew@gmail.com"

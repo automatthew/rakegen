@@ -9,7 +9,7 @@ context "A file_copy task" do
   before(:each) do
     @target = File.join(TEST_DIR, "copy_target")
     
-    @generator = Genitor.new do |gen|
+    @generator = Rakegen.new do |gen|
       gen.source = "/tmp"
       gen.target = @target
       
