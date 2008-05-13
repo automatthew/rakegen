@@ -2,7 +2,7 @@
   require dep
 end
 
-Version = '0.6.2'
+Version = '0.6.3'
 
 task :default => [:test]
 
