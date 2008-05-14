@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Matthew King"]
-  s.date = %q{2008-05-13}
+  s.date = %q{2008-05-14}
   s.description = %q{Generation and updation of projects from templates.  Rake-powered, for sustainable blah blah.}
   s.email = %q{automatthew@gmail.com}
   s.files = ["CHANGELOG", "lib/rakegen/polite_file.rb", "lib/rakegen.rb", "LICENSE", "README", "test/helper.rb", "test/test_polite_file.rb", "test/test_rakegen.rb", "test/testdata/app/alpha/beta/five.erb", "test/testdata/app/four.erb", "test/testdata/app/one", "test/testdata/app/six.textile", "test/testdata/app/three.rb", "test/testdata/app/two.txt", "Manifest", "rakegen.gemspec"]

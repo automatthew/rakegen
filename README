@@ -9,9 +9,7 @@ Rakegen is a Rake extension for generating and updating projects from templates.
     gen.target = "/Users/matthew/dev/waves/thingy"
     gen.excludes << "**/*.yaml"
     gen.template_assigns = {:application_name => "thingy"}
-    file gen.target("bin/console") do
-      system "chmod +x #{gen.target("bin/console")}"
-    end
+    gen.executables = %w{ bin/waves-console  bin/waves-server }
   end
   
 This will define a task named, naturally enough, "generate:app".  You can invoke it in the usual way, with <tt>rake generate_app</tt>, or you can call it from Ruby:
