@@ -2,7 +2,7 @@
   require dep
 end
 
-Version = '0.6.3'
+Version = '0.6.4'
 
 task :default => [:test]
 
@@ -18,6 +18,7 @@ begin
     p.test_pattern = "test/test_*.rb"
     p.dependencies << "rake"
     p.dependencies << "erubis"
+    p.dependencies << "highline"
   end
 rescue
   "(ignored echoe gemification, as you don't have the Right Stuff)"
