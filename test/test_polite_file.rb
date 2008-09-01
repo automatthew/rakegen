@@ -36,6 +36,7 @@ context "A file_copy task" do
   specify "should ask if file exists (no idea how to test Highline stuff)" do
     File.open(@target, "w") { |f| f.print "two" }
     # run in shell and answer "n".  Also, find better way to test.
+    puts "Answer no to the next prompt"
     Rake::Task[@target].invoke
     
     File.read(@target).should == "two"
