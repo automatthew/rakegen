@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), "helper")
 
-context "Simple rakegen" do
+context "A Simple rakegen" do
   
   before(:each) do
     @target = File.join(TEST_DIR, "app_target")
@@ -37,36 +37,36 @@ context "Simple rakegen" do
     rm_r @target if File.exist?(@target)
   end
   
-  specify "should have all directories in the directories list" do
+  specify "includes all directories in the directories list" do
     @generator.directories.to_a.should == @directories
     # @generator.template_files.should == 1
   end
   
-  specify "should have all non-erb files in the copy list" do
+  specify "includes all non-erb files in the copy list" do
     @generator.copy_files.to_a.should == @copy_files
   end
-
-  specify "should have all .erb files in the template list" do
+  
+  specify "includes all .erb files in the template list" do
     @generator.template_files.should == @template_files
   end
   
-  specify "should have an empty excludes list" do
+  specify "has an empty excludes list" do
     @generator.excludes.should == ["**/two.*"]
   end
   
-  specify "should have an executables list" do
+  specify "has an executables list" do
     @generator.executables.should == ["one"]
   end
   
-  specify "should have a working erb template_processor" do
+  specify "has a working erb template_processor" do
     @generator.template_processors["erb"].should.respond_to :call
     @generator.template_processors["erb"].call("#{TEST_APP}/four.erb", "#{TEST_DIR}/catch.txt")
     File.open("#{TEST_DIR}/catch.txt", "r").read.should == "Yossarian jumped."
     rm "#{TEST_DIR}/catch.txt"
   end
   
-  specify "should copy or process all files and directories" do
-    Rake::Task["waves:app"].invoke
+  specify "can copy or process all files and directories using #invoke" do
+    @generator.invoke
     @copy_files.each do |f|
       assert File.exist?(File.join(@target, f))
     end

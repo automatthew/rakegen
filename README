@@ -12,8 +12,8 @@ Rakegen is a Rake extension for generating and updating projects from templates.
     gen.executables = %w{ bin/waves-console  bin/waves-server }
   end
   
-This will define a task named, naturally enough, "generate:app".  You can invoke it in the usual way, with <tt>rake generate_app</tt>, or you can call it from Ruby:
+This will define a task named, naturally enough, "generate:app".  If you define the generator in a rakefile, you can run it with <tt>rake generate:app</tt>.  If you're building your own executable, you can call it from Ruby:
 
-  Rake::Task["generate:app"].invoke
-  
-At the moment, Rakegen happily clobbers any copyable files with mod dates older than the associated template file.  Files produced by template processing always get clobbered.  Soon to come is a more courteous file task that asks if you want to clobber or skip.
+  generator.invoke
+
+Rakegen asks you before clobbering existing files.

@@ -2,7 +2,7 @@
   require dep
 end
 
-Version = '0.6.5'
+Version = '0.6.6'
 
 task :default => [:test]
 
@@ -14,6 +14,7 @@ begin
     p.summary = "Generation and updation of projects from templates.  Rake-powered, for sustainable blah blah."
     p.author = "Matthew King"
     p.email = "automatthew@gmail.com"
+    p.url = "http://rakegen.rubyforge.org"
     p.ignore_pattern = /^(\.git).+/
     p.test_pattern = "test/test_*.rb"
     p.dependencies << "rake"

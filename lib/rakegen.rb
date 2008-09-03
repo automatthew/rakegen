@@ -39,9 +39,26 @@ class Rakegen < Rake::TaskLib
   
   attr_accessor :executables
     
-  # Create a Rakegen task named <em>task_name</em>.  Default task name is +app+.
-  def initialize(name=:app)
-    @name = name
+  # Create a generator.  The task_name becomes the primary Rake task, which has dependency
+  # tasks that get all the work done.  You can use a string to supply a namespaced task name, 
+  # such as "waves:app".
+  #
+  # In the required block, you must define the source and target directories.  You may also define
+  # a list of excludes, a list of executables, assign variables for templates, and lambdas for processing
+  # different kinds of templates, keyed by the file extension.
+  #
+  #   generator = Rakegen.new do |gen|
+  #     gen.source = "some/place"
+  #     gen.target = "some/where/else"
+  #     gen.excludes = "**/*.yaml"
+  #     gen.executables = %w{ bin/console  bin/server }
+  #     gen.template_assigns[:monkey] = "howler"
+  #     gen.template_processors[:erb] = lambda { |src, tgt| MyErb.process(src, tgt) }
+  #   end
+  #
+  
+  def initialize(task_name = :app)
+    @name = task_name
     @excludes = []
     @executables = []
     @template_processors = {}
@@ -54,7 +71,10 @@ class Rakegen < Rake::TaskLib
       end
     end
     
-    yield self # if block_given?
+    yield self
+    
+    raise "You must supply a source." unless @source
+    raise "You must supply a target." unless @target
     
     Dir.chdir(@source) do
       @files = Rake::FileList.new("**/*").exclude(*@excludes).to_a
@@ -75,6 +95,19 @@ class Rakegen < Rake::TaskLib
     define
   end
   
+  # Invoke the primary task.  In other words, run the generator.
+  def invoke
+    Rake::Task[name].invoke
+  end
+  
+  # A rake file-based task that assesses neededness of target files based on user confirmation,
+  # rather than relative timestamps.  As with Rake#file, you can do arbitrary stuff 
+  # in the block:
+  # 
+  #   polite_file "some/target/file" do
+  #     str = File.read("/etc/profile").reverse
+  #     File.write( "some/target/file", str)
+  #   end
   
   def polite_file(args, &block)
     PoliteFileTask.define_task(args, &block)
@@ -85,12 +118,14 @@ class Rakegen < Rake::TaskLib
     path ? File.join(@source, path) : @source
   end
   
-  # If given a path, joins it to @targe.  Otherwise returns @target
+  # If given a path, joins it to @target.  Otherwise returns @target
   def target(path=nil)
     path ? File.join(@target, path) : @target
   end
   
-  # Define the necessary Rakegen tasks
+  private
+  
+  # Define all the generator's dependent tasks
   def define
       desc "Create or update project using Rakegen"
       task name => @all_files.map { |f| target(f) }
